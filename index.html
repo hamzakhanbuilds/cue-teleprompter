@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cue Teleprompter</title>
+<meta name="description" content="A teleprompter that floats over Instagram, Snapchat and your camera.">
+<meta name="theme-color" content="#0a0a10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cue">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/favicon.png">
+<link rel="manifest" href="manifest.json">
+<style>
+  :root {
+    --bg: #0a0a10;
+    --card: #14141d;
+    --card-2: #1b1b27;
+    --line: rgba(255,255,255,.08);
+    --text: #f4f3fa;
+    --muted: #8e8ca3;
+    --a: #7c5cff;
+    --b: #ff6b8b;
+    --c: #ffb86b;
+    --grad: linear-gradient(100deg, var(--a), var(--b) 55%, var(--c));
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); }
+  body {
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    padding: calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 28px);
+    background:
+      radial-gradient(900px 420px at 15% -10%, rgba(124,92,255,.28), transparent 60%),
+      radial-gradient(700px 380px at 110% 10%, rgba(255,107,139,.16), transparent 60%),
+      var(--bg);
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+  .wrap { max-width: 540px; margin: 0 auto; }
+  header { display: flex; align-items: center; gap: 12px; margin: 6px 0 18px; }
+  header img { width: 44px; height: 44px; border-radius: 11px; box-shadow: 0 6px 24px rgba(124,92,255,.45); }
+  header h1 { font-size: 26px; letter-spacing: -.02em; margin: 0; line-height: 1; }
+  header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+  .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px; margin-bottom: 14px; }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+  textarea {
+    width: 100%; min-height: 210px; resize: vertical; background: var(--card-2); color: var(--text);
+    border: 1px solid var(--line); border-radius: 14px; padding: 14px; font: 17px/1.5 inherit; font-family: inherit; outline: none;
+  }
+  textarea:focus { border-color: rgba(124,92,255,.7); box-shadow: 0 0 0 3px rgba(124,92,255,.18); }
+  .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 13px; margin-top: 8px; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .row:first-of-type { border-top: 0; padding-top: 2px; }
+  .row label { font-weight: 600; font-size: 15px; }
+  .row .val { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 14px; min-width: 70px; text-align: right; }
+  input[type=range] { flex: 1; accent-color: var(--b); }
+  .seg { display: inline-flex; background: var(--card-2); border-radius: 11px; padding: 3px; border: 1px solid var(--line); }
+  .seg button { border: 0; background: transparent; color: var(--muted); font: 600 14px inherit; font-family: inherit; padding: 7px 11px; border-radius: 8px; }
+  .seg button.on { background: #2a2a3a; color: var(--text); }
+  .switch { position: relative; width: 50px; height: 30px; flex: none; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch span { position: absolute; inset: 0; background: #2a2a3a; border-radius: 30px; transition: .2s; }
+  .switch span::after { content: ""; position: absolute; width: 24px; height: 24px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .2s; }
+  .switch input:checked + span { background: var(--b); }
+  .switch input:checked + span::after { transform: translateX(20px); }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; border: 0; cursor: pointer;
+    font: 700 17px inherit; font-family: inherit; color: #fff; padding: 17px; border-radius: 16px; background: var(--grad);
+    box-shadow: 0 10px 30px rgba(255,107,139,.25);
+  }
+  .btn:disabled { opacity: .55; }
+  .btn.ghost { background: var(--card-2); box-shadow: none; border: 1px solid var(--line); font-weight: 600; }
+  .btn + .btn { margin-top: 10px; }
+  .progress { height: 8px; background: var(--card-2); border-radius: 8px; overflow: hidden; margin: 12px 0 4px; display: none; }
+  .progress i { display: block; height: 100%; width: 0; background: var(--grad); transition: width .15s; }
+  .status { color: var(--muted); font-size: 13px; text-align: center; min-height: 18px; margin-top: 6px; }
+
+  #result { display: none; }
+  .video-shell { border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--line); margin-bottom: 12px; }
+  .video-shell video { display: block; width: 100%; max-height: 52vh; background: #000; }
+  .rates { display: flex; gap: 8px; justify-content: center; margin: 4px 0 12px; }
+  .rates button { border: 1px solid var(--line); background: var(--card-2); color: var(--muted); font: 600 13px inherit; font-family: inherit; padding: 7px 12px; border-radius: 20px; }
+  .rates button.on { color: #fff; border-color: rgba(255,107,139,.7); }
+
+  ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+  ol.steps li { counter-increment: s; position: relative; padding: 0 0 12px 40px; color: #cfcde0; font-size: 15px; }
+  ol.steps li::before {
+    content: counter(s); position: absolute; left: 0; top: -1px; width: 28px; height: 28px; border-radius: 50%;
+    display: grid; place-items: center; font-weight: 700; font-size: 14px; color: #fff; background: var(--grad);
+  }
+  ol.steps b { color: #fff; }
+  .note { font-size: 13px; color: var(--muted); margin: 6px 0 0; }
+  .install { display: none; }
+  .install.show { display: block; }
+  .share-ico { display: inline-block; width: 18px; height: 18px; vertical-align: -3px; }
+
+  /* Practice mode */
+  #practice { position: fixed; inset: 0; background: #000; z-index: 50; display: none; touch-action: none; }
+  #practice canvas { width: 100%; height: 100%; display: block; }
+  #practice .x {
+    position: absolute; top: calc(env(safe-area-inset-top) + 10px); right: 14px; width: 40px; height: 40px; border-radius: 50%;
+    border: 0; background: rgba(255,255,255,.14); color: #fff; font-size: 22px; line-height: 40px;
+  }
+  #practice .hint { position: absolute; bottom: calc(env(safe-area-inset-bottom) + 14px); left: 0; right: 0; text-align: center; color: rgba(255,255,255,.5); font-size: 13px; }
+  footer { text-align: center; color: #5d5b70; font-size: 12px; margin-top: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="icons/apple-touch-icon.png" alt="">
+    <div>
+      <h1><span class="grad-text">Cue</span></h1>
+      <p>The teleprompter that floats over any camera app</p>
+    </div>
+  </header>
+
+  <section class="card install" id="install">
+    <h2>Install on your iPhone</h2>
+    <ol class="steps">
+      <li>Tap the <b>Share</b> button in Safari
+        <svg class="share-ico" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></li>
+      <li>Choose <b>Add to Home Screen</b>, then <b>Add</b></li>
+      <li>Open <b>Cue</b> from your home screen</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>Your script</h2>
+    <textarea id="script" placeholder="Paste or type what you want to say…" spellcheck="true"></textarea>
+    <div class="meta"><span id="words">0 words</span><span id="dur">—</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Style</h2>
+    <div class="row">
+      <label for="wpm">Speed</label>
+      <input type="range" id="wpm" min="80" max="240" step="5">
+      <span class="val" id="wpmVal"></span>
+    </div>
+    <div class="row">
+      <label>Text size</label>
+      <div class="seg" id="size">
+        <button data-v="m">M</button><button data-v="l">L</button><button data-v="xl">XL</button><button data-v="xxl">XXL</button>
+      </div>
+    </div>
+    <div class="row">
+      <label>Window</label>
+      <div class="seg" id="shape">
+        <button data-v="wide">Wide</button><button data-v="square">Square</button><button data-v="tall">Tall</button>
+      </div>
+    </div>
+    <div class="row">
+      <label>Text colour</label>
+      <div class="seg" id="color">
+        <button data-v="#ffffff">White</button><button data-v="#ffe066">Yellow</button><button data-v="#7dffb2">Mint</button>
+      </div>
+    </div>
+    <div class="row">
+      <label for="countdown">3-2-1 countdown</label>
+      <label class="switch"><input type="checkbox" id="countdown"><span></span></label>
+    </div>
+  </section>
+
+  <button class="btn" id="make">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><rect x="12" y="11" width="7" height="6" rx="1.5" fill="currentColor"/></svg>
+    Make floating prompter
+  </button>
+  <div class="progress" id="progress"><i></i></div>
+  <div class="status" id="status"></div>
+
+  <section id="result">
+    <div class="card" style="margin-top:14px">
+      <h2>Ready</h2>
+      <div class="video-shell"><video id="video" playsinline muted autopictureinpicture preload="auto"></video></div>
+      <div class="rates" id="rates">
+        <button data-r="0.75">0.75×</button><button data-r="1" class="on">1×</button><button data-r="1.25">1.25×</button><button data-r="1.5">1.5×</button>
+      </div>
+      <button class="btn" id="float">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h6"/><rect x="13" y="13" width="9" height="7" rx="1.5" fill="currentColor"/></svg>
+        Float over other apps
+      </button>
+      <button class="btn ghost" id="save">Save video to Photos / Files</button>
+    </div>
+    <div class="card">
+      <h2>Record on Instagram, Snapchat or Camera</h2>
+      <ol class="steps">
+        <li>Tap <b>Float over other apps</b>. A small prompter window pops out.</li>
+        <li>Swipe up to go home and open <b>Instagram</b>, <b>Snapchat</b>, <b>TikTok</b> or <b>Camera</b>.</li>
+        <li>Drag the prompter <b>next to your front camera</b> and pinch it bigger.</li>
+        <li>Tap it and press <b>play</b>. It counts down 3-2-1, then scrolls. Hit record.</li>
+      </ol>
+      <p class="note">The prompter won't show up in your video: camera apps record the camera, not your screen. Swipe it to the screen edge to tuck it away, and tap the arrow to bring it back.</p>
+    </div>
+  </section>
+
+  <button class="btn ghost" id="practiceBtn" style="margin-top:14px">Practice full-screen</button>
+
+  <footer>Your script never leaves your phone.</footer>
+</div>
+
+<div id="practice">
+  <canvas id="pcanvas"></canvas>
+  <button class="x" id="pclose" aria-label="Close">×</button>
+  <div class="hint">Tap to pause · swipe to scroll</div>
+</div>
+
+<script src="mp4-muxer.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
