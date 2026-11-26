@@ -1,5 +1,5 @@
 // Offline cache for Cue.
-const CACHE = "cue-v2";
+const CACHE = "cue-v3";
 const FILES = ["./", "index.html", "app.js", "mp4-muxer.js", "manifest.json",
   "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/favicon.png"];
 self.addEventListener("install", (e) => {

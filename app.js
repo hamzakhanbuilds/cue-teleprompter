@@ -95,7 +95,7 @@
     ctx.fillStyle = g; ctx.fillRect(0, H - fade * 1.4, W, fade * 1.4);
     // reading markers
     const m = Math.max(10, fontPx * 0.26);
-    ctx.fillStyle = "#ff6b8b";
+    ctx.fillStyle = "#ff4f2b";
     for (const [x, dir] of [[m * 0.6, 1], [W - m * 0.6, -1]]) {
       ctx.beginPath(); ctx.moveTo(x, readY - m * 0.7); ctx.lineTo(x + m * dir, readY); ctx.lineTo(x, readY + m * 0.7); ctx.closePath(); ctx.fill();
     }
@@ -103,9 +103,7 @@
     const p = L.dist > 0 ? off / L.dist : 1;
     const bh = Math.max(4, H * 0.009);
     ctx.fillStyle = "rgba(255,255,255,0.12)"; ctx.fillRect(0, H - bh, W, bh);
-    g = ctx.createLinearGradient(0, 0, W, 0);
-    g.addColorStop(0, "#7c5cff"); g.addColorStop(0.55, "#ff6b8b"); g.addColorStop(1, "#ffb86b");
-    ctx.fillStyle = g; ctx.fillRect(0, H - bh, W * p, bh);
+    ctx.fillStyle = "#ff4f2b"; ctx.fillRect(0, H - bh, W * p, bh);
     // countdown
     if (t < T.lead && T.lead > 1) {
       ctx.fillStyle = "rgba(0,0,0,0.72)"; ctx.fillRect(0, 0, W, H);
