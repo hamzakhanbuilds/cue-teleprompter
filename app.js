@@ -299,6 +299,37 @@
   });
   ui.video.addEventListener("play", () => { ui.video.playbackRate = rate; });
 
+  // ── Keep scrolling while a camera app records ──
+  // iOS pauses Picture-in-Picture media when Instagram / Snapchat / Camera start recording.
+  // The prompter video is muted with no audio track, so Safari lets us call play() again
+  // without a tap. Only a pause the user asked for (PiP controls, lock-screen) sticks.
+  let userPaused = false;
+  const inPip = (v) => v.webkitPresentationMode === "picture-in-picture" || document.pictureInPictureElement === v;
+  const resume = () => {
+    const v = ui.video;
+    if (userPaused || v.ended || !v.src) return;
+    v.muted = true;
+    const p = v.play(); if (p && p.catch) p.catch(() => {});
+  };
+  if ("mediaSession" in navigator) {
+    try {
+      navigator.mediaSession.setActionHandler("play", () => { userPaused = false; resume(); });
+      navigator.mediaSession.setActionHandler("pause", () => { userPaused = true; ui.video.pause(); });
+    } catch (e) {}
+  }
+  ui.video.addEventListener("pause", () => {
+    const v = ui.video;
+    if (userPaused || v.ended || !inPip(v)) return;
+    [0, 150, 500, 1200, 2500].forEach((ms) => setTimeout(() => { if (v.paused && inPip(v)) resume(); }, ms));
+  });
+  // The system can also stall playback without a pause event; a light watchdog catches it.
+  setInterval(() => { const v = ui.video; if (v.paused && inPip(v) && !userPaused && !v.ended && v.currentTime > 0) resume(); }, 700);
+  // Any real start of playback (PiP play button, our resume) clears the user-pause.
+  let priming = false;
+  ui.video.addEventListener("playing", () => { if (!priming) userPaused = false; });
+  // Tapping the video itself (in the page) still pauses/plays normally.
+  ui.video.addEventListener("click", () => { if (!ui.video.paused) userPaused = true; });
+
   ui.float.addEventListener("click", () => {
     const v = ui.video;
     if (!v.src) return;
@@ -313,7 +344,11 @@
         v.requestPictureInPicture().catch((e) => { console.warn(e); pipFailed(); }); entered = true;
       }
     } catch (e) { console.warn(e); }
-    if (playing && playing.then) playing.then(() => { v.pause(); v.currentTime = 0; }).catch(() => {});
+    // Prime playback inside the tap, then park at 0:00 until the user presses play in the window.
+    userPaused = true; priming = true;
+    const park = () => { userPaused = true; v.pause(); v.currentTime = 0; setTimeout(() => { priming = false; }, 300); };
+    if (playing && playing.then) playing.then(park).catch(() => { priming = false; });
+    else priming = false;
     if (!entered) pipFailed();
     else ui.status.textContent = "Floating! Swipe home and open your camera app. Tap the window and press play.";
   });
