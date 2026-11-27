@@ -1,7 +1,7 @@
 {
   "name": "Cue Teleprompter",
   "short_name": "Cue",
-  "description": "A teleprompter that floats over Instagram, Snapchat and your camera.",
+  "description": "A teleprompter for iPhone.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

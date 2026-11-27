@@ -12,7 +12,7 @@
   const DEFAULT_SCRIPT =
     "Hey! This is Cue, your floating teleprompter.\n\n" +
     "Paste your own script in the box, then tap Make floating prompter.\n\n" +
-    "Open Instagram or Snapchat, drag me next to your camera, tap play, and just read.\n\n" +
+    "Pick your speed and text size, then press play and just read.\n\n" +
     "Keep your eyes up here and you'll look straight into the lens.";
 
   // ---------- settings ----------
@@ -348,7 +348,7 @@
     if (playing && playing.then) playing.then(park).catch(() => { priming = false; });
     else priming = false;
     if (!entered) pipFailed();
-    else ui.status.textContent = "Floating! Swipe home and open your camera app. Tap the window and press play.";
+    else ui.status.textContent = "Floating. Tap the window and press play.";
   });
   function pipFailed() {
     ui.status.textContent = "Picture-in-Picture isn't available here. Open this page in Safari and try again.";
