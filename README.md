@@ -12,7 +12,7 @@ Cue comes in two versions.
 | | Use it for | Keeps scrolling while you record on the same iPhone |
 |---|---|---|
 | **[iPhone app](#iphone-app)** | Recording | Yes (see the tested setup below) |
-| **[Web version](https://khanhamzahk771-collab.github.io/cue-teleprompter/)** | Practice, or reading while another device records | No, iOS can stop it when recording starts |
+| **[Web version](https://hamzakhanbuilds.github.io/cue-teleprompter/)** | Practice, or reading while another device records | No, iOS can stop it when recording starts |
 
 ## iPhone app
 
@@ -27,7 +27,7 @@ Tested on an iPhone 15 with iOS 27.0.1. Camera apps behave differently, so recor
 
 ### Install
 
-1. Download **[Cue.ipa](https://github.com/khanhamzahk771-collab/cue-teleprompter/releases/latest/download/Cue.ipa)** from the [latest release](https://github.com/khanhamzahk771-collab/cue-teleprompter/releases/latest).
+1. Download **[Cue.ipa](https://github.com/hamzakhanbuilds/cue-teleprompter/releases/latest/download/Cue.ipa)** from the [latest release](https://github.com/hamzakhanbuilds/cue-teleprompter/releases/latest).
 2. Connect your iPhone, open Impactor, add your Apple ID, then drag in `Cue.ipa` and install.
 3. On the iPhone, trust your Apple ID under **Settings → General → VPN & Device Management**.
 4. Turn on **Settings → Privacy & Security → Developer Mode** and restart.
@@ -57,7 +57,7 @@ Set everything before you start: the floating window has no speed or text contro
 
 ## Web version
 
-1. Open [the site](https://khanhamzahk771-collab.github.io/cue-teleprompter/) in **Safari**.
+1. Open [the site](https://hamzakhanbuilds.github.io/cue-teleprompter/) in **Safari**.
 2. Tap **Share**, then **Add to Home Screen**.
 3. Paste a script, then use **Practice full-screen** or **Make floating prompter**.
 
