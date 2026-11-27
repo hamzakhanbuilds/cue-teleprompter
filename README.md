@@ -22,24 +22,30 @@ Tested on an iPhone 15 with iOS 27.0.1. Camera apps behave differently, so recor
 
 ### What you need
 
-- A Mac with Xcode installed
-- [Impactor](https://github.com/claration/impactor) to install the app on your phone
-- An Apple ID (a free one works)
+- A Mac with [Impactor](https://github.com/claration/impactor) installed
+- An Apple ID (a free one works; a spare one is safer for any third-party tool)
 
-### Build and install
+### Install
 
-1. Build the app file:
-
-   ```sh
-   cd ios
-   ./build-ipa.sh
-   ```
-
-2. Connect your iPhone, open Impactor, add your Apple ID, then drag in `ios/build/Cue.ipa` and install.
+1. Download **[Cue.ipa](https://github.com/khanhamzahk771-collab/cue-teleprompter/releases/latest/download/Cue.ipa)** from the [latest release](https://github.com/khanhamzahk771-collab/cue-teleprompter/releases/latest).
+2. Connect your iPhone, open Impactor, add your Apple ID, then drag in `Cue.ipa` and install.
 3. On the iPhone, trust your Apple ID under **Settings → General → VPN & Device Management**.
 4. Turn on **Settings → Privacy & Security → Developer Mode** and restart.
 
 With a free Apple ID the app stops opening after 7 days. Install it again to renew it.
+
+The download is unsigned and comes with no warranty.
+
+### Build it yourself
+
+With Xcode installed:
+
+```sh
+cd ios
+./build-ipa.sh
+```
+
+The app file appears at `ios/build/Cue.ipa`.
 
 ### Record with it
 
