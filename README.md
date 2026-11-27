@@ -64,3 +64,7 @@ Set everything before you start: the floating window has no speed or text contro
 ## Privacy
 
 Your script stays on your device. Neither version uploads it.
+
+## License
+
+[MIT](LICENSE) © 2026 Hamza Khan. The bundled `mp4-muxer.js` keeps its own license, listed in [third-party notices](THIRD-PARTY-NOTICES.md).
